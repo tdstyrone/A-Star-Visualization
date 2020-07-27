@@ -1,4 +1,4 @@
-# A* Pathfinding Visualization
+# A* Pathfinding Algorithm Visualization
 This is an A* pathfinding algorithm visualization. The program is built using the pygame module in python to visualize how the algroithm works. 
 
 ## Technologies Used
@@ -25,7 +25,7 @@ To Clear Screen:
 ### Preview
 Below is a sample of the code running:
 
-![Preview](https://media.giphy.com/media/VdVkaA0ETzi37fuJXY/giphy.gif)
+![Preview](https://media.giphy.com/media/ibYVS9mDimGl2Hhu88/giphy.gif)
 
 
 
