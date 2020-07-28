@@ -1,5 +1,5 @@
 # A* Pathfinding Algorithm Visualization
-This is an A* pathfinding algorithm visualization. The program is built using the pygame module in python to visualize how the algroithm works. 
+This is an A* pathfinding algorithm visualization. I was really interested in learning about algorithms and so, I decided to visualize how this algroithm works. Have fun playing around with the Visulization tool!! 
 
 ## Technologies Used
 These can be found in the requirements.txt folder:
