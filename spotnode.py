@@ -1,6 +1,12 @@
 import pygame
 import colors
 
+"""
+
+    Creates class object SpotNode to represent squares on grid
+    Includes Methods to assign specific colors to squares and perform certain tests
+"""
+
 class SpotNode:
     def __init__(self, row, col, width, total_rows):
         self.neighbors = []
@@ -55,7 +61,7 @@ class SpotNode:
     def draw(self, win):
         pygame.draw.rect(win, self.color, (self.x_value, self.y_value, self.width, self.width))
 
-    def update_neighbors(self, grid):
+    def update_neighbors(self, grid):  # Similar to Flood Fill
 
         if self.row > 0 and not grid[self.row - 1][self.col].is_wall():  # UP
             self.neighbors.append(grid[self.row - 1][self.col])
