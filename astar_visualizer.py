@@ -1,31 +1,47 @@
 import pygame
 from spotnode import SpotNode
 import colors
-import math
 from queue import PriorityQueue
 
+""" 
+
+Sets up the display window
+Dimensions(WIDTH and HEIGHT) of window can be adjusted here
+Number of Rows on grid can be adjusted here (ROWS)
+"""
+
+ROWS = 50
 WIDTH = 800
-WIN_SIZE = pygame.display.set_mode((WIDTH, WIDTH))
+HEIGHT = 800
+WIN_SIZE = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("A* Pathfinding Algorithm Visualizer")
 
 
 def heuristic(point_1, point_2):
+    """Calculates the manhattan distance between points and returns an integer"""
+
     x1, y1 = point_1
     x2, y2 = point_2
-    man_dist = abs(x1 - x2) + abs(y1-y2)
+    man_dist = abs(x1 - x2) + abs(y1 - y2)
     return man_dist
 
-def reconstruct_path(came_from, current, draw):
-    while current in came_from:
-        current = came_from[current]
-        current.make_path()
-        draw()
 
-def algorithm(draw, grid, start, end):
+def construct_path(parent_node, current, draw_board):
+    """Draws path by retracing previously visited nodes"""
+
+    while current in parent_node:
+        current = parent_node[current]
+        current.make_path()
+        draw_board()
+
+
+def astar_algorithm(draw_board, grid, start, end):
+    """Implements the A* Algorithm and returns an boolean"""
+
     count = 0
     open_set = PriorityQueue()
     open_set.put((0, count, start))
-    came_from = {}
+    parent_node = {}
     g_score = {spot: float("inf") for row in grid for spot in row}
     g_score[start] = 0
     f_score = {spot: float("inf") for row in grid for spot in row}
@@ -42,7 +58,7 @@ def algorithm(draw, grid, start, end):
         open_set_hash.remove(current)
 
         if current == end:
-            reconstruct_path(came_from, end, draw)
+            construct_path(parent_node, end, draw_board)
             end.make_end()
             return True
 
@@ -50,7 +66,7 @@ def algorithm(draw, grid, start, end):
             temp_g_score = g_score[current] + 1
 
             if temp_g_score < g_score[neighbor]:
-                came_from[neighbor] = current
+                parent_node[neighbor] = current
                 g_score[neighbor] = temp_g_score
                 f_score[neighbor] = temp_g_score + heuristic(neighbor.get_position(), end.get_position())
                 if neighbor not in open_set_hash:
@@ -58,15 +74,16 @@ def algorithm(draw, grid, start, end):
                     open_set.put((f_score[neighbor], count, neighbor))
                     open_set_hash.add(neighbor)
                     neighbor.make_open()
-        draw()
+        draw_board()
 
         if current != start:
             current.make_closed()
-
     return False
 
 
 def generate_grid(rows, width):
+    """Creates squares to form grid and returns an SpotNode array"""
+
     grid = []
     spot_width = width // rows
     for i in range(rows):
@@ -76,53 +93,59 @@ def generate_grid(rows, width):
             grid[i].append(spot)
     return grid
 
+
 def draw_grid(win_size, rows, width):
+    """Draws the lines to form graph"""
+
     spot_width = width // rows
-    
+
     for i in range(rows):
         pygame.draw.line(win_size, colors.GREY, (0, i * spot_width), (width, i * spot_width))
-        for j in range(rows):
-            pygame.draw.line(win_size, colors.GREY, (j * spot_width, 0), (j * spot_width, width))
+        pygame.draw.line(win_size, colors.GREY, (i * spot_width, 0), (i * spot_width, width))
 
 
 def draw(win_size, grid, rows, width):
+    """Draws the entire grid and fills each square white"""
     win_size.fill(colors.WHITE)
 
     for row in grid:
         for spot in row:
             spot.draw(win_size)
-    
+
     draw_grid(win_size, rows, width)
     pygame.display.update()
 
 
 def get_pos_clicked(pos, rows, width):
+    """Calculates the row and column value of point on screen clicked and returns a Integer tuple"""
+
     spot_width = width // rows
     y, x = pos
 
     row = y // spot_width
     col = x // spot_width
-    
+
     return row, col
 
 
-def main(win_size, width):
-    ROWS = 50
-    grid = generate_grid(ROWS, width)
+def main(win_size, width, rows):
+    """Runs the entire program"""
+
+    grid = generate_grid(rows, width)
 
     start = None
     end = None
 
     run = True
     while run:
-        draw(win_size, grid, ROWS, width)
+        draw(win_size, grid, rows, width)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
 
-            if pygame.mouse.get_pressed()[0]:  # LEFT
+            if pygame.mouse.get_pressed()[0]:  # Left-Click
                 pos = pygame.mouse.get_pos()
-                row, col = get_pos_clicked(pos, ROWS, width)
+                row, col = get_pos_clicked(pos, rows, width)
                 spot = grid[row][col]
                 if not start and spot != end:
                     start = spot
@@ -135,9 +158,9 @@ def main(win_size, width):
                 elif spot != end and spot != start:
                     spot.make_wall()
 
-            elif pygame.mouse.get_pressed()[2]:  # RIGHT
+            elif pygame.mouse.get_pressed()[2]:  # Right-CLick
                 pos = pygame.mouse.get_pos()
-                row, col = get_pos_clicked(pos, ROWS, width)
+                row, col = get_pos_clicked(pos, rows, width)
                 spot = grid[row][col]
                 spot.reset()
                 if spot == start:
@@ -150,13 +173,14 @@ def main(win_size, width):
                     for row in grid:
                         for spot in row:
                             spot.update_neighbors(grid)
-                    algorithm(lambda: draw(win_size, grid, ROWS, width), grid, start, end)
+                    astar_algorithm(lambda: draw(win_size, grid, rows, width), grid, start, end)
 
                 if event.key == pygame.K_c:
                     start = None
                     end = None
-                    grid = generate_grid(ROWS, width)
-
+                    grid = generate_grid(rows, width)
     pygame.quit()
 
-main(WIN_SIZE, WIDTH)
+
+if __name__ == "__main__":
+    main(WIN_SIZE, WIDTH, ROWS)
