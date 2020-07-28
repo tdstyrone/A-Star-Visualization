@@ -20,7 +20,7 @@ To Run:
   - Hit SPACEBAR!!
   
 To Clear Screen:
-  - Hit "c"
+  - Hit "C"
   
 ### Preview
 Below is a sample of the code running:
