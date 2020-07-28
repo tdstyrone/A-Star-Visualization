@@ -1,3 +1,5 @@
+"""Colors to be used throughout project"""
+
 TURQUOISE = (15, 242, 219)
 DARK_BLUE = (22, 84, 230)
 YELLOW = (255, 222, 3)
